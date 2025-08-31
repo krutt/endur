@@ -1,0 +1,49 @@
+[build-system]
+build-backend = 'maturin'
+requires = [ 'maturin>=0.13,<0.14' ]
+
+
+[dependency-groups]
+dev = [
+  'fastapi >=0.116.1',
+  'ruff >=0.12.11',
+  'uvicorn >=0.35.0',
+]
+
+
+[project]
+authors = [
+  {email='aekazitt+github@gmail.com', name='Sitt Guruvanich'},
+]
+classifiers = [
+  'Development Status :: 3 - Alpha',
+  'Environment :: Web Environment',
+  'Intended Audience :: Developers',
+  'License :: OSI Approved :: MIT License',
+  'Operating System :: OS Independent',
+  'Operating System :: Unix',
+  'Programming Language :: Rust',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.13',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: Implementation :: CPython',
+  'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+  'Topic :: Software Development :: Libraries :: Python Modules'
+]
+description = 'Stable Channels implementation as a Python ASGI Middleware'
+license = {file='LICENSE'}
+keywords = []
+name = 'endur'
+requires-python = '>=3.13'
+readme = 'README.md'
+version = '0.0.1'
+
+
+[tool.ruff]
+indent-width = 2
+line-length = 100
+target-version = 'py38'

@@ -3,14 +3,54 @@
 
 ## Stable Channels
 
-Stable Channels is a wallet and technology that lets users peg a portion of their bitcoin to a dollar balance. 
+Stable Channels is a library and technology that lets users peg a portion of their bitcoin to a dollar balance. 
 
-### Downloads
-- [macOS](https://github.com/toneloc/stable-channels/releases/download/0.6/stable-channels-mac.zip)
-- [Windows](https://github.com/toneloc/stable-channels/releases/download/0.6/stable-channels-windows.zip)
-- [Linux](https://github.com/toneloc/stable-channels/releases/download/0.6/stable-channels-linux.zip)
+### Python Library
 
-The Stable Channels Desktop Wallet runs a full Lightning node that lets users stabilize the money that they send to themselves during onboarding. 
+This project now provides a Python library built with PyO3 bindings around the core Rust implementation. You can use it as:
+
+1. **Python Library**: Import `stable_channels` and use the PyO3 bindings directly
+2. **FastAPI Server**: Run the included FastAPI wrapper for REST API access
+3. **Rust Library**: Use the core Rust library directly in your Rust projects
+
+### Installation
+
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Build the Python extension
+python setup.py develop
+
+# Or build the Rust library
+cargo build --release
+```
+
+### Usage
+
+#### Python Library
+```python
+import stable_channels
+
+# Get BTC price
+price = stable_channels.get_btc_price()
+
+# Create node
+config = stable_channels.PyNodeConfig()
+node = stable_channels.create_node(config)
+
+# Generate invoice
+invoice = node.generate_invoice(1000)  # 1000 sats
+```
+
+#### FastAPI Server
+```bash
+python fastapi_server.py
+# Server runs on http://localhost:8000
+# API docs at http://localhost:8000/docs
+```
+
+The Stable Channels implementation runs a full Lightning node that lets users stabilize their bitcoin holdings. 
 
 The LSP/Server keeps the user stable by overcollateralizing the Stable Channel at the time of channel creation. Each user (the stability receiver and the the LSP/stability provider) puts in the same amount of bitcoin, the stability mechanism is activated. 
 
