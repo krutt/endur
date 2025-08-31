@@ -1,21 +1,37 @@
 /* ~~/src/lib.rs */
 
+mod audit;
+mod oracles;
+mod stable;
+mod types;
+
+use audit::{audit_event, set_audit_log_path};
 use ldk_node::{Builder, Event, Node};
+use oracles::get_cached_price;
 use pyo3::prelude::*;
-use std::sync::Arc;
+use serde_json::json;
+use std::sync::{Arc, Mutex};
+use types::{Bitcoin, StableChannel, USD};
 
 #[pyclass]
 pub struct Endur {
   node: Option<Arc<Node>>,
+  stable_channel: Option<Arc<Mutex<StableChannel>>>,
+  audit_log_path: String,
 }
 
 #[pymethods]
 impl Endur {
   #[new]
   fn new() -> Self {
-    Self { node: None }
+    Self {
+      node: None,
+      stable_channel: None,
+      audit_log_path: String::new(),
+    }
   }
 
+  #[pyo3(signature = (data_dir=None))]
   fn start(&mut self, data_dir: Option<String>) -> PyResult<String> {
     let mut builder = Builder::new();
 
@@ -23,9 +39,12 @@ impl Endur {
     builder.set_network(ldk_node::bitcoin::Network::Bitcoin);
     builder.set_chain_source_esplora("https://blockstream.info/api/".to_string(), None);
 
-    if let Some(dir) = data_dir {
-      builder.set_storage_dir_path(dir);
-    }
+    let data_dir_path = data_dir.unwrap_or_else(|| "./data".to_string());
+    builder.set_storage_dir_path(data_dir_path.clone());
+
+    // Set up audit logging
+    self.audit_log_path = format!("{}/audit_log.txt", data_dir_path);
+    set_audit_log_path(&self.audit_log_path);
 
     let node = Arc::new(
       builder
@@ -38,17 +57,39 @@ impl Endur {
       .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Start failed: {}", e)))?;
 
     let node_id = node.node_id().to_string();
+
+    // Initialize stable channel
+    let btc_price = get_cached_price();
+    let stable_channel = StableChannel {
+      expected_usd: USD::from_f64(100.0), // Default $100 stable value
+      expected_btc: Bitcoin::from_usd(USD::from_f64(100.0), btc_price),
+      latest_price: btc_price,
+      ..Default::default()
+    };
+
     self.node = Some(node);
+    self.stable_channel = Some(Arc::new(Mutex::new(stable_channel)));
+
+    audit_event(
+      "NODE_STARTED",
+      json!({
+        "node_id": node_id,
+        "btc_price": btc_price
+      }),
+    );
 
     Ok(node_id)
   }
 
   fn stop(&mut self) -> PyResult<()> {
     if let Some(node) = self.node.take() {
+      audit_event("NODE_STOPPING", json!({}));
       node
         .stop()
         .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Stop failed: {}", e)))?;
+      audit_event("NODE_STOPPED", json!({}));
     }
+    self.stable_channel = None;
     Ok(())
   }
 
@@ -147,6 +188,100 @@ impl Endur {
       )),
     }
   }
+
+  fn get_btc_price(&self) -> f64 {
+    get_cached_price()
+  }
+
+  fn update_btc_price(&self) -> PyResult<f64> {
+    match price_feeds::get_latest_price(&ureq::Agent::new()) {
+      Ok(price) => {
+        if let Some(stable_channel) = &self.stable_channel {
+          if let Ok(mut sc) = stable_channel.lock() {
+            sc.latest_price = price;
+          }
+        }
+        audit_event("PRICE_UPDATED", json!({"btc_price": price}));
+        Ok(price)
+      }
+      Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(format!(
+        "Price fetch failed: {}",
+        e
+      ))),
+    }
+  }
+
+  fn get_stable_channel_info(&self) -> PyResult<(f64, f64, f64, f64)> {
+    match (&self.node, &self.stable_channel) {
+      (Some(node), Some(stable_channel)) => {
+        if let Ok(mut sc) = stable_channel.lock() {
+          stable::update_balances(node, &mut sc);
+          Ok((
+            sc.stable_receiver_usd.0,
+            sc.stable_provider_usd.0,
+            sc.stable_receiver_btc.to_btc(),
+            sc.stable_provider_btc.to_btc(),
+          ))
+        } else {
+          Err(pyo3::exceptions::PyRuntimeError::new_err(
+            "Failed to lock stable channel",
+          ))
+        }
+      }
+      _ => Err(pyo3::exceptions::PyRuntimeError::new_err(
+        "Node or stable channel not initialized",
+      )),
+    }
+  }
+
+  fn update_stability(&self) -> PyResult<()> {
+    match (&self.node, &self.stable_channel) {
+      (Some(node), Some(stable_channel)) => {
+        let price = get_cached_price();
+        if price <= 0.0 {
+          return Err(pyo3::exceptions::PyRuntimeError::new_err("Invalid price"));
+        }
+
+        if let Ok(mut sc) = stable_channel.lock() {
+          stable::check_stability(node, &mut sc, price);
+          Ok(())
+        } else {
+          Err(pyo3::exceptions::PyRuntimeError::new_err(
+            "Failed to lock stable channel",
+          ))
+        }
+      }
+      _ => Err(pyo3::exceptions::PyRuntimeError::new_err(
+        "Node or stable channel not initialized",
+      )),
+    }
+  }
+
+  fn set_stable_amount(&self, usd_amount: f64) -> PyResult<()> {
+    if let Some(stable_channel) = &self.stable_channel {
+      if let Ok(mut sc) = stable_channel.lock() {
+        sc.expected_usd = USD::from_f64(usd_amount);
+        let price = get_cached_price();
+        sc.expected_btc = Bitcoin::from_usd(sc.expected_usd, price);
+        audit_event(
+          "STABLE_AMOUNT_SET",
+          json!({
+            "usd_amount": usd_amount,
+            "btc_price": price
+          }),
+        );
+        Ok(())
+      } else {
+        Err(pyo3::exceptions::PyRuntimeError::new_err(
+          "Failed to lock stable channel",
+        ))
+      }
+    } else {
+      Err(pyo3::exceptions::PyRuntimeError::new_err(
+        "Stable channel not initialized",
+      ))
+    }
+  }
 }
 
 #[pymodule]
@@ -154,4 +289,3 @@ fn endur(m: &Bound<'_, PyModule>) -> PyResult<()> {
   m.add_class::<Endur>()?;
   Ok(())
 }
-
