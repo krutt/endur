@@ -1,7 +1,7 @@
 /* ~~/src/stable.rs */
 
 use crate::audit::audit_event;
-use crate::price_feeds::get_cached_price;
+use crate::oracles::get_cached_price;
 use crate::types::{Bitcoin, StableChannel, USD};
 use ldk_node::{lightning::ln::types::ChannelId, Node};
 use serde_json::json;
