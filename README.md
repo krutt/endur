@@ -1,7 +1,15 @@
-[![main on CLN v24.02.2](https://github.com/toneloc/stable-channels/actions/workflows/main_v24.02.yml/badge.svg?branch=main)](https://github.com/toneloc/stable-channels/actions/workflows/main_v24.02.yml)
+# Endur
 
+[![Bitcoin-only](https://img.shields.io/badge/bitcoin-only-FF9900?logo=bitcoin)](https://twentyone.world)
+[![License: GNU GPLv3](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/krutt/endur/blob/master/LICENSE)
+[![Top](https://img.shields.io/github/languages/top/krutt/smatt)](https://github.com/krutt/endur)
+[![Languages](https://img.shields.io/github/languages/count/krutt/smatt)](https://github.com/krutt/endur)
+[![Size](https://img.shields.io/github/repo-size/krutt/endur)](https://github.com/krutt/smatt)
+[![Last commit](https://img.shields.io/github/last-commit/krutt/endur/master)](https://github.com/krutt/endur)
 
-## Stable Channels
+[![Endur banner](https://github.com/krutt/endur/blob/master/static/endur-banner.svg)](static/endur-banner.svg)
+
+### What are Stable Channels?
 
 Stable Channels is a library and technology that lets users peg a portion of their bitcoin to a dollar balance. 
 
