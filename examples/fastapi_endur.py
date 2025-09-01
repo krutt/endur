@@ -9,12 +9,18 @@
 #
 # HISTORY:
 # *************************************************************
+
+### Standard packages ###
 from contextlib import asynccontextmanager
-from endur import Endur
+
+### Third-party packages ###
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from logging import Logger, getLogger
 from pydantic import BaseModel
+
+### Local modules ###
+from endur import Endur
 
 logger: Logger = getLogger("uvicorn")
 
@@ -104,87 +110,89 @@ async def get_events():
 
 @app.get("/balances")
 async def get_balances():
-   """Get node balances"""
-   if not app.state.node or not app.state.node.is_running():
-     raise HTTPException(status_code=503, detail="Node not running")
-   try:
-     onchain_sats, lightning_sats = app.state.node.get_balances()
-     return {
-       "onchain_sats": onchain_sats,
-       "lightning_sats": lightning_sats,
-       "total_sats": onchain_sats + lightning_sats,
-     }
-   except Exception as e:
-     raise HTTPException(status_code=500, detail=str(e))
+  """Get node balances"""
+  if not app.state.node or not app.state.node.is_running():
+    raise HTTPException(status_code=503, detail="Node not running")
+  try:
+    onchain_sats, lightning_sats = app.state.node.get_balances()
+    return {
+      "onchain_sats": onchain_sats,
+      "lightning_sats": lightning_sats,
+      "total_sats": onchain_sats + lightning_sats,
+    }
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/price")
 async def get_btc_price():
-   """Get current BTC/USD price"""
-   if not app.state.node:
-     raise HTTPException(status_code=503, detail="Node not initialized")
-   try:
-     price = app.state.node.get_btc_price()
-     return {"btc_usd": price}
-   except Exception as e:
-     raise HTTPException(status_code=500, detail=str(e))
+  """Get current BTC/USD price"""
+  if not app.state.node:
+    raise HTTPException(status_code=503, detail="Node not initialized")
+  try:
+    price = app.state.node.get_btc_price()
+    return {"btc_usd": price}
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/price/update")
 async def update_btc_price():
-   """Fetch latest BTC/USD price"""
-   if not app.state.node or not app.state.node.is_running():
-     raise HTTPException(status_code=503, detail="Node not running")
-   try:
-     price = app.state.node.update_btc_price()
-     return {"btc_usd": price, "updated": True}
-   except Exception as e:
-     raise HTTPException(status_code=500, detail=str(e))
+  """Fetch latest BTC/USD price"""
+  if not app.state.node or not app.state.node.is_running():
+    raise HTTPException(status_code=503, detail="Node not running")
+  try:
+    price = app.state.node.update_btc_price()
+    return {"btc_usd": price, "updated": True}
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/stable")
 async def get_stable_info():
-   """Get stable channel information"""
-   if not app.state.node or not app.state.node.is_running():
-     raise HTTPException(status_code=503, detail="Node not running")
-   try:
-     receiver_usd, provider_usd, receiver_btc, provider_btc = app.state.node.get_stable_channel_info()
-     return {
-       "stable_receiver_usd": receiver_usd,
-       "stable_provider_usd": provider_usd,
-       "stable_receiver_btc": receiver_btc,
-       "stable_provider_btc": provider_btc,
-     }
-   except Exception as e:
-     raise HTTPException(status_code=500, detail=str(e))
+  """Get stable channel information"""
+  if not app.state.node or not app.state.node.is_running():
+    raise HTTPException(status_code=503, detail="Node not running")
+  try:
+    receiver_usd, provider_usd, receiver_btc, provider_btc = (
+      app.state.node.get_stable_channel_info()
+    )
+    return {
+      "stable_receiver_usd": receiver_usd,
+      "stable_provider_usd": provider_usd,
+      "stable_receiver_btc": receiver_btc,
+      "stable_provider_btc": provider_btc,
+    }
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/stable/update")
 async def update_stability():
-   """Update stability mechanism"""
-   if not app.state.node or not app.state.node.is_running():
-     raise HTTPException(status_code=503, detail="Node not running")
-   try:
-     app.state.node.update_stability()
-     return {"status": "success", "message": "Stability updated"}
-   except Exception as e:
-     raise HTTPException(status_code=500, detail=str(e))
+  """Update stability mechanism"""
+  if not app.state.node or not app.state.node.is_running():
+    raise HTTPException(status_code=503, detail="Node not running")
+  try:
+    app.state.node.update_stability()
+    return {"status": "success", "message": "Stability updated"}
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 class StableAmountRequest(BaseModel):
-   usd_amount: float
+  usd_amount: float
 
 
 @app.post("/stable/amount")
 async def set_stable_amount(request: StableAmountRequest):
-   """Set the stable USD amount"""
-   if not app.state.node or not app.state.node.is_running():
-     raise HTTPException(status_code=503, detail="Node not running")
-   try:
-     app.state.node.set_stable_amount(request.usd_amount)
-     return {"status": "success", "usd_amount": request.usd_amount}
-   except Exception as e:
-     raise HTTPException(status_code=500, detail=str(e))
+  """Set the stable USD amount"""
+  if not app.state.node or not app.state.node.is_running():
+    raise HTTPException(status_code=503, detail="Node not running")
+  try:
+    app.state.node.set_stable_amount(request.usd_amount)
+    return {"status": "success", "usd_amount": request.usd_amount}
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
