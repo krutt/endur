@@ -5,9 +5,15 @@ requires = [ 'maturin>=1.0,<2.0' ]
 
 [dependency-groups]
 dev = [
-  'fastapi >=0.116.1',
+  'fastapi >=0',
   'ruff >=0.12.11',
   'uvicorn >=0.35.0',
+]
+tests = [
+  'fastapi >=0',
+  'httpx >=0.28.1',
+  'pytest >=8.4.1',
+  'pytest-cov >=6.2.1',
 ]
 
 
@@ -41,6 +47,16 @@ name = 'endur'
 requires-python = '>=3.13'
 readme = 'README.md'
 version = '0.0.1'
+
+
+[tool.maturin]
+module-name = 'endur'
+bindings = 'pyo3'
+
+
+[tool.pytest.ini_options]
+python_files = '*.py'
+testpaths = [ 'tests' ]
 
 
 [tool.ruff]
