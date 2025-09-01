@@ -194,7 +194,7 @@ impl Endur {
   }
 
   fn update_btc_price(&self) -> PyResult<f64> {
-    match price_feeds::get_latest_price(&ureq::Agent::new()) {
+    match oracles::get_latest_price(&ureq::Agent::new()) {
       Ok(price) => {
         if let Some(stable_channel) = &self.stable_channel {
           if let Ok(mut sc) = stable_channel.lock() {
