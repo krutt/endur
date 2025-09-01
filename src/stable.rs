@@ -17,7 +17,7 @@ pub fn get_current_price(agent: &Agent) -> f64 {
     return cached_price;
   }
 
-  match crate::price_feeds::get_latest_price(agent) {
+  match crate::oracles::get_latest_price(agent) {
     Ok(price) => price,
     Err(_) => 0.0,
   }
