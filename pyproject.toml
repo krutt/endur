@@ -34,7 +34,7 @@ classifiers = [
   'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
   'Topic :: Software Development :: Libraries :: Python Modules'
 ]
-description = 'Stable Channels implementation as a Python ASGI Middleware'
+description = 'Stable Channels implementation as a Python ASGI State Middleware and Dependency Injection'
 license = {file='LICENSE'}
 keywords = []
 name = 'endur'
@@ -46,4 +46,4 @@ version = '0.0.1'
 [tool.ruff]
 indent-width = 2
 line-length = 100
-target-version = 'py38'
+target-version = 'py313'
