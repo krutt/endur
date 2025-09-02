@@ -159,9 +159,14 @@ Abbreviations:
 
 ### Acknowledgements
 
-Thanks to countless open-source bitcoin developers and organizations who have made this work possible. Satoshi Lives!
-
-Thanks to all of the Lightning Network core developers, and all of the bitcoin open-source devs on whose giant shoulders we stand. 
+1. [Satoshi Lives!](https://github.com/bitcoin/bitcoin)
+2. [The Bitcoin Lightning Network: Scalable Off-Chain Instant Payments](https://lightning.network/lightning-network-paper.pdf)
+3. [Delving Bitcoin: Stable Channels - peer-to-peer dollar balances on Lightning](https://delvingbitcoin.org/t/stable-channels-peer-to-peer-dollar-balances-on-lightning/875)
+4. [stable-channels](https://github.com/toneloc/stable-channels) 
+5. [หลายขนาด - Lai Khnad](https://www.f0nt.com/release/sov-laikhnad) typeface
+  by [uvSOV - Worawut Thanawatanawanich](https://fb.com/worawut.thanawatanawanich)
+6. [Chaumian E-cash](...)
+7. [Cashu](...)
 
 ## License
 
