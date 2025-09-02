@@ -50,7 +50,6 @@ Every 30 seconds, the price of bitcoin:
 - **(c) Stays the same:**
   - **No action required.**
 
-*Note: Stable Channels are currently non-routing channels. Work is ongoing to add routing and payment capabilities.*
 
 ## Payout Examples (entry = $100,000/BTC)
 
