@@ -32,21 +32,6 @@ Links with examples:
 - **In-depth discussion:** [Delving Bitcoin](https://delvingbitcoin.org/t/stable-channels-peer-to-peer-dollar-balances-on-lightning)
 - **Project website:** [StableChannels.com](https://www.stablechannels.com)
 
-### Run the User Desktop Wallet 
-
-You can check out the latest builds for MacOS, Windows, or Linux here - https://github.com/toneloc/stable-channels/releases
-
-### Run from Source
-
-To run the app from this source, please install Rust on your OS.
-
-Using a fresh Ubuntu? You may need to install OpenSSL libraries. `sudo apt-get install -y pkg-config libssl-dev` and `curl`.
-
-Clone the repo `git clone https://github.com/toneloc/stable-channels` and `cd` into it.
-
-Run `cargo run --bin stable-channels user`. This will start the app on mainnet. Pay the invoice and you are good to go.
-
-Check out logs, key files, and other information in `/data`.
 
 ### Stable Channels Process
 
