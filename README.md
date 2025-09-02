@@ -162,7 +162,7 @@ Abbreviations:
 1. [Satoshi Lives!](https://github.com/bitcoin/bitcoin)
 2. [The Bitcoin Lightning Network: Scalable Off-Chain Instant Payments](https://lightning.network/lightning-network-paper.pdf)
 3. [Delving Bitcoin: Stable Channels - peer-to-peer dollar balances on Lightning](https://delvingbitcoin.org/t/stable-channels-peer-to-peer-dollar-balances-on-lightning/875)
-4. [stable-channels](https://github.com/toneloc/stable-channels) 
+4. [github: toneloc/stable-channels](https://github.com/toneloc/stable-channels) 
 5. [หลายขนาด - Lai Khnad](https://www.f0nt.com/release/sov-laikhnad) typeface
   by [uvSOV - Worawut Thanawatanawanich](https://fb.com/worawut.thanawatanawanich)
 6. [Chaumian E-cash](...)
