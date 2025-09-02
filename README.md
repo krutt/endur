@@ -1,7 +1,7 @@
 # Endur
 
 [![Bitcoin-only](https://img.shields.io/badge/bitcoin-only-FF9900?logo=bitcoin)](https://twentyone.world)
-[![License: GNU GPLv3](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/krutt/endur/blob/master/LICENSE)
+[![License: GNU GPLv3](https://img.shields.io/badge/License-GNU%20GPLv3-yellow.svg)](https://github.com/krutt/endur/blob/master/LICENSE)
 [![Top](https://img.shields.io/github/languages/top/krutt/endur)](https://github.com/krutt/endur)
 [![Languages](https://img.shields.io/github/languages/count/krutt/smatt)](https://github.com/krutt/endur)
 [![Size](https://img.shields.io/github/repo-size/krutt/endur)](https://github.com/krutt/smatt)
