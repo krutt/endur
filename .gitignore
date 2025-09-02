@@ -1,15 +1,19 @@
 ### data ###
 data
 
+
 ### envvars ###
 .env
+
 
 ### logs ###
 logs
 *.log
 
+
 ### osx ###
 .DS_Store
+
 
 ### python ###
 __pycache__/
@@ -21,8 +25,14 @@ dist
 *.egg-info
 *.egg
 
+
 ### rust ###
 target
+
+
+### token ###
+pypi-token.pypi
+
 
 ### workspace ###
 .idea
