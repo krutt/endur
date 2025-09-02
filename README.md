@@ -162,3 +162,7 @@ Abbreviations:
 Thanks to countless open-source bitcoin developers and organizations who have made this work possible. Satoshi Lives!
 
 Thanks to all of the Lightning Network core developers, and all of the bitcoin open-source devs on whose giant shoulders we stand. 
+
+## License
+
+This project is licensed under the terms of the GNU General Public License 3.0 license.
