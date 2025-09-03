@@ -207,10 +207,10 @@ impl Endur {
         if let Ok(mut sc) = stable_channel.lock() {
           stable::update_balances(node, &mut sc);
           Ok((
-            sc.stable_receiver_usd.0,
-            sc.stable_provider_usd.0,
-            sc.stable_receiver_btc.to_btc(),
-            sc.stable_provider_btc.to_btc(),
+            sc.receiver_usd.0,
+            sc.provider_usd.0,
+            sc.receiver_btc.to_btc(),
+            sc.provider_btc.to_btc(),
           ))
         } else {
           Err(PyRuntimeError::new_err("Failed to lock stable channel"))

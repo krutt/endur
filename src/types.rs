@@ -3,10 +3,9 @@
 use ldk_node::bitcoin::secp256k1::PublicKey;
 use ldk_node::lightning::ln::types::ChannelId;
 use serde::{Deserialize, Serialize};
-use std::{
-  ops::{Div, Sub},
-  time::{SystemTime, UNIX_EPOCH},
-};
+use std::fmt::{Display, Formatter};
+use std::ops::{Div, Sub};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 // Custom serialization for ChannelId
 mod channel_id_serde {
@@ -96,8 +95,8 @@ impl Sub for Bitcoin {
   }
 }
 
-impl std::fmt::Display for Bitcoin {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Display for Bitcoin {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     let btc_value = self.to_btc();
 
     // Format the value to 8 decimal places with spaces
@@ -178,15 +177,15 @@ impl std::fmt::Display for USD {
 pub struct StableChannel {
   #[serde(with = "channel_id_serde")]
   pub channel_id: ChannelId,
-  pub is_stable_receiver: bool,
+  pub is_receiver: bool,
   #[serde(with = "pubkey_serde")]
   pub counterparty: PublicKey,
   pub expected_usd: USD,
   pub expected_btc: Bitcoin,
-  pub stable_receiver_btc: Bitcoin,
-  pub stable_provider_btc: Bitcoin,
-  pub stable_receiver_usd: USD,
-  pub stable_provider_usd: USD,
+  pub receiver_btc: Bitcoin,
+  pub provider_btc: Bitcoin,
+  pub receiver_usd: USD,
+  pub provider_usd: USD,
   pub risk_level: i32,
   pub timestamp: i64,
   pub formatted_datetime: String,
@@ -203,7 +202,7 @@ impl Default for StableChannel {
   fn default() -> Self {
     Self {
       channel_id: ChannelId::from_bytes([0; 32]),
-      is_stable_receiver: true,
+      is_receiver: true,
       counterparty: PublicKey::from_slice(&[2; 33]).unwrap_or_else(|_| {
         // This is a fallback that should never be reached,
         // but provides a valid default public key if needed
@@ -216,10 +215,10 @@ impl Default for StableChannel {
       }),
       expected_usd: USD(0.0),
       expected_btc: Bitcoin::from_sats(0),
-      stable_receiver_btc: Bitcoin::from_sats(0),
-      stable_provider_btc: Bitcoin::from_sats(0),
-      stable_receiver_usd: USD(0.0),
-      stable_provider_usd: USD(0.0),
+      receiver_btc: Bitcoin::from_sats(0),
+      provider_btc: Bitcoin::from_sats(0),
+      receiver_usd: USD(0.0),
+      provider_usd: USD(0.0),
       risk_level: 0,
       timestamp: SystemTime::now()
         .duration_since(UNIX_EPOCH)
