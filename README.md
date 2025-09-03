@@ -134,7 +134,7 @@ open-sourced registry defined under `pyproject.toml` file.
   cd endur
   uv venv --python 3.9.6
   source .venv/bin/activate
-  uv sync --dev
+  uv sync --dev --seed
   ```
 </details>
 
