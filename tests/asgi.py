@@ -24,7 +24,7 @@ def client():
     yield client
 
 
-def test_generate_invoice(self, client):
+def test_generate_invoice(client):
   """Test invoice generation endpoint"""
   response = client.post(
     "/generate_invoice", json={"amount_sats": 1000, "description": "Test payment"}
@@ -35,7 +35,7 @@ def test_generate_invoice(self, client):
   assert invoice.startswith("lnbc")
 
 
-def test_invalid_invoice_request(self, client):
+def test_invalid_invoice_request(client):
   """Test invoice generation with invalid parameters"""
   # Test negative amount
   response = client.post(
@@ -48,7 +48,7 @@ def test_invalid_invoice_request(self, client):
   assert response.status_code == 422
 
 
-def test_node_status(self, client):
+def test_node_status(client):
   """Test node status endpoint"""
   response = client.get("/status")
   assert response.status_code == 200
@@ -57,7 +57,7 @@ def test_node_status(self, client):
   assert isinstance(data["running"], bool)
 
 
-def test_node_info(self, client):
+def test_node_info(client):
   """Test node info endpoint"""
   response = client.get("/info")
   assert response.status_code == 200
