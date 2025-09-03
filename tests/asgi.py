@@ -27,10 +27,12 @@ def client():
 def test_generate_invoice(client):
   """Test invoice generation endpoint"""
   response = client.post(
-    "/generate_invoice", json={"amount_sats": 1000, "description": "Test payment"}
+    "/invoice", json={"amount_sats": 1000, "description": "Test payment"}
   )
   assert response.status_code == 200
-  invoice = response.json()
+  result = response.json()
+  assert "invoice" in result
+  invoice = result["invoice"]
   assert isinstance(invoice, str)
   assert invoice.startswith("lnbc")
 
@@ -39,27 +41,27 @@ def test_invalid_invoice_request(client):
   """Test invoice generation with invalid parameters"""
   # Test negative amount
   response = client.post(
-    "/generate_invoice", json={"amount_sats": -1000, "description": "Test payment"}
+    "/invoice", json={"amount_sats": -1000, "description": "Test payment"}
   )
   assert response.status_code == 400
 
   # Test missing amount
-  response = client.post("/generate_invoice", json={"description": "Test payment"})
+  response = client.post("/invoice", json={"description": "Test payment"})
   assert response.status_code == 422
 
 
 def test_node_status(client):
   """Test node status endpoint"""
-  response = client.get("/status")
+  response = client.get("/")
   assert response.status_code == 200
   data = response.json()
-  assert "running" in data
-  assert isinstance(data["running"], bool)
+  assert "status" in data
+  assert data["status"] == "running"
 
 
 def test_node_info(client):
   """Test node info endpoint"""
-  response = client.get("/info")
+  response = client.get("/")
   assert response.status_code == 200
   data = response.json()
   assert "node_id" in data
