@@ -65,19 +65,17 @@ pub fn update_balances<'update_balance_lifetime>(
       stable_channel.provider_btc = Bitcoin::from_sats(our_balance_sats);
       stable_channel.receiver_btc = Bitcoin::from_sats(their_balance_sats);
     }
-
     stable_channel.receiver_usd = USD::from_bitcoin(stable_channel.receiver_btc, stable_channel.latest_price);
     stable_channel.provider_usd = USD::from_bitcoin(stable_channel.provider_btc, stable_channel.latest_price);
-
     audit_event(
       "BALANCE_UPDATE",
       json!({
-          "channel_id": format!("{}", stable_channel.channel_id),
-          "receiver_btc": stable_channel.receiver_btc.to_string(),
-          "provider_btc": stable_channel.provider_btc.to_string(),
-          "receiver_usd": stable_channel.receiver_usd.to_string(),
-          "provider_usd": stable_channel.provider_usd.to_string(),
-          "btc_price": stable_channel.latest_price
+        "channel_id": format!("{}", stable_channel.channel_id),
+        "receiver_btc": stable_channel.receiver_btc.to_string(),
+        "provider_btc": stable_channel.provider_btc.to_string(),
+        "receiver_usd": stable_channel.receiver_usd.to_string(),
+        "provider_usd": stable_channel.provider_usd.to_string(),
+        "btc_price": stable_channel.latest_price
       }),
     );
 
@@ -99,7 +97,7 @@ pub fn check_stability(node: &Node, stable_channel: &mut StableChannel, price: f
       audit_event(
         "STABILITY_SKIP",
         json!({
-            "reason": "no valid price available"
+          "reason": "no valid price available"
         }),
       );
       return;
@@ -112,7 +110,7 @@ pub fn check_stability(node: &Node, stable_channel: &mut StableChannel, price: f
     audit_event(
       "BALANCE_UPDATE_FAILED",
       json!({
-          "channel_id": format!("{}", stable_channel.channel_id)
+        "channel_id": format!("{}", stable_channel.channel_id)
       }),
     );
     return;
@@ -158,9 +156,9 @@ pub fn check_stability(node: &Node, stable_channel: &mut StableChannel, price: f
       audit_event(
         "STABILITY_PAYMENT_SENT",
         json!({
-            "amount_msats": amt,
-            "payment_id": payment_id.to_string(),
-            "counterparty": stable_channel.counterparty.to_string()
+          "amount_msats": amt,
+          "payment_id": payment_id.to_string(),
+          "counterparty": stable_channel.counterparty.to_string()
         }),
       );
     }
@@ -168,9 +166,9 @@ pub fn check_stability(node: &Node, stable_channel: &mut StableChannel, price: f
       audit_event(
         "STABILITY_PAYMENT_FAILED",
         json!({
-            "amount_msats": amt,
-            "error": format!("{e}"),
-            "counterparty": stable_channel.counterparty.to_string()
+          "amount_msats": amt,
+          "error": format!("{e}"),
+          "counterparty": stable_channel.counterparty.to_string()
         }),
       );
     }
