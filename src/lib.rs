@@ -267,7 +267,7 @@ impl Endur {
 }
 
 #[pymodule]
-fn endur(m: &Bound<'_, PyModule>) -> PyResult<()> {
-  m.add_class::<Endur>()?;
+fn endur(module: &Bound<'_, PyModule>) -> PyResult<()> {
+  module.add_class::<Endur>()?;
   Ok(())
 }
