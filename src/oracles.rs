@@ -2,19 +2,18 @@
 
 use crate::audit::audit_event;
 use retry::{delay::Fixed, retry};
-use serde_json::json;
-use serde_json::Value;
+use serde_json::{json, Value};
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use ureq::Agent;
 
 lazy_static::lazy_static! {
-    static ref PRICE_CACHE: Arc<Mutex<PriceCache>> = Arc::new(Mutex::new(PriceCache {
-        price: 0.0,
-        last_update: Instant::now() - Duration::from_secs(10),
-        updating: false,
-    }));
+  static ref PRICE_CACHE: Arc<Mutex<PriceCache>> = Arc::new(Mutex::new(PriceCache {
+    last_update: Instant::now() - Duration::from_secs(10),
+    price: 0.0,
+    updating: false,
+  }));
 }
 
 // A very simple price cache structure

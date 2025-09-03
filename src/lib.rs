@@ -8,6 +8,7 @@ mod types;
 use audit::{audit_event, set_audit_log_path};
 use ldk_node::{Builder, Event, Node};
 use oracles::get_cached_price;
+use pyo3::exceptions::{PyRuntimeError, PyValueError};
 use pyo3::prelude::*;
 use serde_json::json;
 use std::sync::{Arc, Mutex};
@@ -49,12 +50,12 @@ impl Endur {
     let node = Arc::new(
       builder
         .build()
-        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Build failed: {}", e)))?,
+        .map_err(|e| PyRuntimeError::new_err(format!("Build failed: {}", e)))?,
     );
 
     node
       .start()
-      .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Start failed: {}", e)))?;
+      .map_err(|e| PyRuntimeError::new_err(format!("Start failed: {}", e)))?;
 
     let node_id = node.node_id().to_string();
 
@@ -86,7 +87,7 @@ impl Endur {
       audit_event("NODE_STOPPING", json!({}));
       node
         .stop()
-        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Stop failed: {}", e)))?;
+        .map_err(|e| PyRuntimeError::new_err(format!("Stop failed: {}", e)))?;
       audit_event("NODE_STOPPED", json!({}));
     }
     self.stable_channel = None;
@@ -100,9 +101,7 @@ impl Endur {
   fn node_id(&self) -> PyResult<String> {
     match &self.node {
       Some(node) => Ok(node.node_id().to_string()),
-      None => Err(pyo3::exceptions::PyRuntimeError::new_err(
-        "Node not started",
-      )),
+      None => Err(PyRuntimeError::new_err("Node not started")),
     }
   }
 
@@ -112,7 +111,7 @@ impl Endur {
         let msats = amount_sats * 1000;
         let desc =
           ldk_node::lightning_invoice::Description::new(description.to_string()).map_err(|e| {
-            pyo3::exceptions::PyValueError::new_err(format!("Invalid description: {}", e))
+            PyValueError::new_err(format!("Invalid description: {}", e))
           })?;
         let invoice = node
           .bolt11_payment()
@@ -122,7 +121,7 @@ impl Endur {
             3600,
           )
           .map_err(|e| {
-            pyo3::exceptions::PyRuntimeError::new_err(format!("Invoice generation failed: {}", e))
+            PyRuntimeError::new_err(format!("Invoice generation failed: {}", e))
           })?;
         Ok(invoice.to_string())
       }
@@ -135,14 +134,13 @@ impl Endur {
   fn get_new_address(&self) -> PyResult<String> {
     match &self.node {
       Some(node) => {
-        let address = node.onchain_payment().new_address().map_err(|e| {
-          pyo3::exceptions::PyRuntimeError::new_err(format!("Address generation failed: {}", e))
-        })?;
+        let address = node
+          .onchain_payment()
+          .new_address()
+          .map_err(|e| PyRuntimeError::new_err(format!("Address generation failed: {}", e)))?;
         Ok(address.to_string())
       }
-      None => Err(pyo3::exceptions::PyRuntimeError::new_err(
-        "Node not started",
-      )),
+      None => Err(PyRuntimeError::new_err("Node not started")),
     }
   }
 
@@ -155,9 +153,7 @@ impl Endur {
           balances.total_lightning_balance_sats,
         ))
       }
-      None => Err(pyo3::exceptions::PyRuntimeError::new_err(
-        "Node not started",
-      )),
+      None => Err(PyRuntimeError::new_err("Node not started")),
     }
   }
 
@@ -183,14 +179,8 @@ impl Endur {
         }
         Ok(events)
       }
-      None => Err(pyo3::exceptions::PyRuntimeError::new_err(
-        "Node not started",
-      )),
+      None => Err(PyRuntimeError::new_err("Node not started")),
     }
-  }
-
-  fn get_btc_price(&self) -> f64 {
-    get_cached_price()
   }
 
   fn update_btc_price(&self) -> PyResult<f64> {
@@ -204,7 +194,7 @@ impl Endur {
         audit_event("PRICE_UPDATED", json!({"btc_price": price}));
         Ok(price)
       }
-      Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(format!(
+      Err(e) => Err(PyRuntimeError::new_err(format!(
         "Price fetch failed: {}",
         e
       ))),
@@ -223,12 +213,10 @@ impl Endur {
             sc.stable_provider_btc.to_btc(),
           ))
         } else {
-          Err(pyo3::exceptions::PyRuntimeError::new_err(
-            "Failed to lock stable channel",
-          ))
+          Err(PyRuntimeError::new_err("Failed to lock stable channel"))
         }
       }
-      _ => Err(pyo3::exceptions::PyRuntimeError::new_err(
+      _ => Err(PyRuntimeError::new_err(
         "Node or stable channel not initialized",
       )),
     }
@@ -239,19 +227,17 @@ impl Endur {
       (Some(node), Some(stable_channel)) => {
         let price = get_cached_price();
         if price <= 0.0 {
-          return Err(pyo3::exceptions::PyRuntimeError::new_err("Invalid price"));
+          return Err(PyRuntimeError::new_err("Invalid price"));
         }
 
         if let Ok(mut sc) = stable_channel.lock() {
           stable::check_stability(node, &mut sc, price);
           Ok(())
         } else {
-          Err(pyo3::exceptions::PyRuntimeError::new_err(
-            "Failed to lock stable channel",
-          ))
+          Err(PyRuntimeError::new_err("Failed to lock stable channel"))
         }
       }
-      _ => Err(pyo3::exceptions::PyRuntimeError::new_err(
+      _ => Err(PyRuntimeError::new_err(
         "Node or stable channel not initialized",
       )),
     }
@@ -272,14 +258,10 @@ impl Endur {
         );
         Ok(())
       } else {
-        Err(pyo3::exceptions::PyRuntimeError::new_err(
-          "Failed to lock stable channel",
-        ))
+        Err(PyRuntimeError::new_err("Failed to lock stable channel"))
       }
     } else {
-      Err(pyo3::exceptions::PyRuntimeError::new_err(
-        "Stable channel not initialized",
-      ))
+      Err(PyRuntimeError::new_err("Stable channel not initialized"))
     }
   }
 }

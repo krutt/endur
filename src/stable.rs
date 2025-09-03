@@ -23,12 +23,6 @@ pub fn get_current_price(agent: &Agent) -> f64 {
   }
 }
 
-pub fn channel_exists(node: &Node, channel_id: &ChannelId) -> bool {
-  let channels = node.list_channels();
-  channels.iter().any(|c| c.channel_id == *channel_id)
-}
-
-// Can run in background
 pub fn update_balances<'update_balance_lifetime>(
   node: &Node,
   sc: &'update_balance_lifetime mut StableChannel,
