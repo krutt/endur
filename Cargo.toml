@@ -14,6 +14,14 @@ name = 'endur'
 crate-type = ['rlib']
 
 
+[profile.release]
+opt-level = 'z'
+codegen-units = 1
+lto = true
+panic = 'abort'
+strip = true
+
+
 [package]
 name = 'endur'
 version = '0.1.0'
